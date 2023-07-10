@@ -16,7 +16,6 @@ services:
   label-studio:
     restart: unless-stopped
     image: heartexlabs/label-studio:latest
-    user: root
     environment:
       - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
       - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files
