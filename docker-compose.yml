@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRE_USER}
+      POSTGRES_PASSWORD: ${POSTGRE_PASSWORD}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres-db:/data/postgres
+    ports:
+      - "${POSTGRES_HOST_PORT}:5432"
+    networks:
+      - d-monitor-network
+  label-studio:
+    restart: unless-stopped
+    image: heartexlabs/label-studio:latest
+    user: root
+    environment:
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files
+      - DJANGO_DB=${DJANGO_DB}
+      - POSTGRE_NAME=${POSTGRE_NAME}
+      - POSTGRE_USER=${POSTGRE_USER}
+      - POSTGRE_PASSWORD=${POSTGRE_PASSWORD}
+      - POSTGRE_PORT=${POSTGRE_PORT}
+      - POSTGRE_HOST=${POSTGRE_HOST}
+    ports:
+      - "8080:8080"
+    volumes:
+      - label-studio-data:/label-studio/data
+      - ${LABEL_STUDIO_VOLUME_HOST_AUDIO_PATH}:/label-studio/files
+    depends_on:
+      - postgres
+    networks:
+      - d-monitor-network
+networks:
+  d-monitor-network:
+    name: d-monitor-network
+volumes:
+  label-studio-data:
+    driver: local
+  postgres-db:
+    driver: local
